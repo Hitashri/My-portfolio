@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Contact — Hitashri Dinesh Sankhe</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --c-pink: #FFA5C6;
+      --c-yellow: #FFDF7D;
+      --c-lime: #F2FFAA;
+      --c-periwinkle: #A5ACE3;
+      --c-sky: #73E3FF;
+
+      --desk-bg: #FCFAF7;
+      --desk-dot: #E8DECF;
+      --sheet-bg: #FFFFFF;
+      --text-main: #2D2727;
+      --text-muted: #665D5D;
+      --border-soft: #EFE6DA;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: var(--desk-bg);
+      background-image:
+        radial-gradient(circle at 10% 20%, rgba(115, 227, 255, 0.35) 0%, transparent 40%),
+        radial-gradient(circle at 85% 80%, rgba(255, 223, 125, 0.35) 0%, transparent 40%),
+        radial-gradient(var(--desk-dot) 1.5px, transparent 1.5px);
+      background-size: 100% 100%, 100% 100%, 28px 28px;
+      color: var(--text-main);
+      line-height: 1.6;
+      padding: 40px 24px 64px;
+      min-height: 100vh;
+    }
+    .container { max-width: 860px; margin: 0 auto; }
+    .top-nav { margin-bottom: 28px; }
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+      color: var(--text-main);
+      font-weight: 700;
+      font-size: 0.9rem;
+      background: #FFFFFF;
+      border: 1.5px solid var(--c-periwinkle);
+      padding: 8px 20px;
+      border-radius: 24px;
+      box-shadow: 0 4px 12px rgba(165, 172, 227, 0.15);
+      transition: all 0.2s ease;
+    }
+    .back-btn:hover {
+      transform: translateX(-3px);
+      background: var(--c-periwinkle);
+      color: #FFFFFF;
+    }
+    .page-sheet {
+      background: var(--sheet-bg);
+      border: 2px solid var(--border-soft);
+      border-radius: 28px;
+      padding: 44px 38px;
+      box-shadow: 0 16px 36px rgba(165, 172, 227, 0.1);
+      position: relative;
+    }
+    .sheet-pin {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      position: absolute;
+      top: 18px;
+      left: 24px;
+      background: var(--c-sky);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+    }
+    .tag-badge {
+      display: inline-block;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-weight: 700;
+      color: var(--text-main);
+      background: var(--c-sky);
+      padding: 5px 14px;
+      border-radius: 12px;
+      margin-bottom: 16px;
+    }
+    h1 {
+      font-size: 2.35rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      line-height: 1.25;
+      margin-bottom: 12px;
+    }
+    h1 span {
+      font-family: 'Caveat', cursive;
+      font-size: 2.9rem;
+      color: #00A6CC;
+    }
+    .subhead {
+      font-size: 1.05rem;
+      color: var(--text-muted);
+      margin-bottom: 32px;
+    }
+
+    .contact-card {
+      background: #FFFFFF;
+      border: 2px solid var(--border-soft);
+      border-radius: 20px;
+      padding: 30px;
+      box-shadow: 0 8px 24px rgba(115, 227, 255, 0.12);
+    }
+    .contact-row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 16px 0;
+      border-bottom: 1.5px solid var(--border-soft);
+    }
+    .contact-row:last-child {
+      border-bottom: none;
+      padding-bottom: 4px;
+    }
+    .row-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: #E2F9FF;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+      flex-shrink: 0;
+    }
+    .row-label {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      font-weight: 700;
+      color: var(--text-muted);
+      margin-bottom: 2px;
+    }
+    .row-value a {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--text-main);
+      text-decoration: none;
+      transition: color 0.2s ease;
+    }
+    .row-value a:hover {
+      color: #00A6CC;
+    }
+    .row-value span {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="top-nav">
+      <a href="index.html" class="back-btn">← Back to Desk Canvas</a>
+    </div>
+
+    <main class="page-sheet">
+      <div class="sheet-pin"></div>
+      <span class="tag-badge">Get in Touch</span>
+      <h1>Let's <span>Talk</span> ☕</h1>
+      <p class="subhead">
+        Open to full-time UX Research roles, Product Design opportunities, and collaborative Human-AI research initiatives.
+      </p>
+
+      <div class="contact-card">
+        <div class="contact-row">
+          <div class="row-icon">📬</div>
+          <div>
+            <div class="row-label">Email</div>
+            <div class="row-value">
+              <a href="mailto:Hitashrisankhe02@gmail.com">Hitashrisankhe02@gmail.com</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="contact-row">
+          <div class="row-icon">📞</div>
+          <div>
+            <div class="row-label">Phone</div>
+            <div class="row-value">
+              <a href="tel:2019204011">201-920-4011</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="contact-row">
+          <div class="row-icon">📍</div>
+          <div>
+            <div class="row-label">Location</div>
+            <div class="row-value">
+              <span>Jersey City, NJ / New York, NY</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+</body>
+</html>

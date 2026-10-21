@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Blog & Research — Hitashri Dinesh Sankhe</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --c-pink: #FFA5C6;
+      --c-yellow: #FFDF7D;
+      --c-lime: #F2FFAA;
+      --c-periwinkle: #A5ACE3;
+      --c-sky: #73E3FF;
+
+      --desk-bg: #FCFAF7;
+      --desk-dot: #E8DECF;
+      --sheet-bg: #FFFFFF;
+      --text-main: #2D2727;
+      --text-muted: #665D5D;
+      --border-soft: #EFE6DA;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: var(--desk-bg);
+      background-image:
+        radial-gradient(circle at 10% 15%, rgba(242, 255, 170, 0.35) 0%, transparent 35%),
+        radial-gradient(circle at 90% 80%, rgba(165, 172, 227, 0.28) 0%, transparent 40%),
+        radial-gradient(var(--desk-dot) 1.5px, transparent 1.5px);
+      background-size: 100% 100%, 100% 100%, 28px 28px;
+      color: var(--text-main);
+      line-height: 1.6;
+      padding: 40px 24px 64px;
+      min-height: 100vh;
+    }
+    .container { max-width: 1000px; margin: 0 auto; }
+    .top-nav { margin-bottom: 28px; }
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+      color: var(--text-main);
+      font-weight: 700;
+      font-size: 0.9rem;
+      background: #FFFFFF;
+      border: 1.5px solid var(--c-periwinkle);
+      padding: 8px 20px;
+      border-radius: 24px;
+      box-shadow: 0 4px 12px rgba(165, 172, 227, 0.15);
+      transition: all 0.2s ease;
+    }
+    .back-btn:hover {
+      transform: translateX(-3px);
+      background: var(--c-periwinkle);
+      color: #FFFFFF;
+    }
+    .page-sheet {
+      background: var(--sheet-bg);
+      border: 2px solid var(--border-soft);
+      border-radius: 28px;
+      padding: 44px 38px;
+      box-shadow: 0 16px 36px rgba(165, 172, 227, 0.1);
+      position: relative;
+    }
+    .sheet-pin {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      position: absolute;
+      top: 18px;
+      left: 24px;
+      background: #8CC434;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+    }
+    .tag-badge {
+      display: inline-block;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-weight: 700;
+      color: var(--text-main);
+      background: var(--c-lime);
+      padding: 5px 14px;
+      border-radius: 12px;
+      margin-bottom: 16px;
+    }
+    h1 {
+      font-size: 2.35rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      line-height: 1.25;
+      margin-bottom: 12px;
+    }
+    h1 span {
+      font-family: 'Caveat', cursive;
+      font-size: 2.9rem;
+      color: #6C941A;
+    }
+    .subhead {
+      font-size: 1.05rem;
+      color: var(--text-muted);
+      margin-bottom: 32px;
+    }
+
+    .article-card {
+      background: #FFFFFF;
+      border: 2px solid var(--border-soft);
+      border-radius: 20px;
+      padding: 28px;
+      margin-bottom: 24px;
+      box-shadow: 0 8px 22px rgba(0,0,0,0.03);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .article-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 28px rgba(165, 172, 227, 0.12);
+    }
+    .article-tag {
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #8CC434;
+      display: inline-block;
+      margin-bottom: 8px;
+    }
+    .article-title {
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+      line-height: 1.35;
+    }
+    .article-desc {
+      font-size: 0.94rem;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+      line-height: 1.65;
+    }
+    .article-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: #E2487E;
+      font-weight: 700;
+      font-size: 0.9rem;
+      text-decoration: none;
+    }
+    .article-link:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="top-nav">
+      <a href="index.html" class="back-btn">← Back to Desk Canvas</a>
+    </div>
+
+    <main class="page-sheet">
+      <div class="sheet-pin"></div>
+      <span class="tag-badge">Research & Publications</span>
+      <h1>Writings & <span>Research</span> 📚</h1>
+      <p class="subhead">Peer-reviewed publications, Human-AI interaction studies, and deceptive UI pattern investigations.</p>
+
+      <!-- Paper 1 -->
+      <article class="article-card">
+        <span class="article-tag">HCI International Conference • 2026</span>
+        <h2 class="article-title">Where Design Meets Code: Real-Time Human–AI Co-Creation and Cognitive-Load–Aware Design Assistance</h2>
+        <p class="article-desc">
+          Wizard-of-Oz evaluations across 50 participants measuring cognitive load during real-time visual-to-code generation. Measured workload reduction via NASA-TLX, showing a 44-point decrease in participant cognitive friction when AI assistant triggers are calibrated to user focus states.
+        </p>
+        <span class="article-link">Presentation & Proceedings Publication ↗</span>
+      </article>
+
+      <!-- Research 2: UI Traps & Ethical Solutions -->
+      <article class="article-card" style="border-left: 5px solid var(--c-pink);">
+        <span class="article-tag" style="color: #E2487E;">UX Case Study • Ethical Heuristics</span>
+        <h2 class="article-title">UI Traps & Dark Patterns: Identifying Friction and Designing Ethical Alternatives</h2>
+        <p class="article-desc">
+          An ongoing heuristic investigation analyzing visual misdirection, confirmshaming, roach motels, and false urgency in modern mobile products. Explores how high-converting deceptive patterns erode user retention and outlines transparent, dignity-preserving alternatives that protect user autonomy.
+        </p>
+        <span class="article-link" style="color: #8CC434;">Read Heuristic Breakdown ↗</span>
+      </article>
+
+      <!-- Paper 3 -->
+      <article class="article-card">
+        <span class="article-tag">International Journal of Research & Innovation (IJRI)</span>
+        <h2 class="article-title">Uncertainty in Big Data Processing</h2>
+        <p class="article-desc">
+          Peer-reviewed research exploring data pipeline variance, processing architectures, and handling structural uncertainty across distributed computational workflows.
+        </p>
+        <a href="https://www.viva-technology.org/New/IJRI/2022/165.html" target="_blank" class="article-link">
+          Read Journal Publication ↗
+        </a>
+      </article>
+
+    </main>
+  </div>
+
+</body>
+</html>

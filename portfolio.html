@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Portfolio & Case Studies — Hitashri Dinesh Sankhe</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --c-pink: #FFA5C6;
+      --c-yellow: #FFDF7D;
+      --c-lime: #F2FFAA;
+      --c-periwinkle: #A5ACE3;
+      --c-sky: #73E3FF;
+
+      --desk-bg: #FCFAF7;
+      --desk-dot: #E8DECF;
+      --sheet-bg: #FFFFFF;
+      --text-main: #2D2727;
+      --text-muted: #665D5D;
+      --border-soft: #EFE6DA;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: var(--desk-bg);
+      background-image:
+        radial-gradient(circle at 10% 15%, rgba(255, 165, 198, 0.25) 0%, transparent 35%),
+        radial-gradient(circle at 90% 80%, rgba(165, 172, 227, 0.28) 0%, transparent 40%),
+        radial-gradient(circle at 50% 50%, rgba(242, 255, 170, 0.25) 0%, transparent 50%),
+        radial-gradient(var(--desk-dot) 1.5px, transparent 1.5px);
+      background-size: 100% 100%, 100% 100%, 100% 100%, 28px 28px;
+      color: var(--text-main);
+      line-height: 1.6;
+      padding: 40px 24px 64px;
+      min-height: 100vh;
+    }
+    .container { max-width: 1200px; margin: 0 auto; }
+    .top-nav { margin-bottom: 28px; }
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+      color: var(--text-main);
+      font-weight: 700;
+      font-size: 0.9rem;
+      background: #FFFFFF;
+      border: 1.5px solid var(--c-periwinkle);
+      padding: 8px 20px;
+      border-radius: 24px;
+      box-shadow: 0 4px 12px rgba(165, 172, 227, 0.15);
+      transition: all 0.2s ease;
+    }
+    .back-btn:hover {
+      transform: translateX(-3px);
+      background: var(--c-periwinkle);
+      color: #FFFFFF;
+    }
+    .page-sheet {
+      background: var(--sheet-bg);
+      border: 2px solid var(--border-soft);
+      border-radius: 28px;
+      padding: 44px 38px;
+      box-shadow: 0 16px 36px rgba(165, 172, 227, 0.1);
+      position: relative;
+    }
+    .sheet-pin {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      position: absolute;
+      top: 18px;
+      left: 24px;
+      background: var(--c-pink);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+    }
+    .tag-badge {
+      display: inline-block;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-weight: 700;
+      color: var(--text-main);
+      background: var(--c-pink);
+      padding: 5px 14px;
+      border-radius: 12px;
+      margin-bottom: 16px;
+    }
+    h1 {
+      font-size: 2.35rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      line-height: 1.25;
+      margin-bottom: 12px;
+    }
+    h1 span {
+      font-family: 'Caveat', cursive;
+      font-size: 2.9rem;
+      color: #E2487E;
+    }
+    .subhead {
+      font-size: 1.05rem;
+      color: var(--text-muted);
+      margin-bottom: 32px;
+    }
+
+    /* Grid of Projects */
+    .project-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(460px, 1fr));
+      gap: 30px;
+    }
+    @media (max-width: 600px) {
+      .project-grid { grid-template-columns: 1fr; }
+    }
+
+    .project-card {
+      background: #FFFFFF;
+      border: 2px solid var(--border-soft);
+      border-radius: 20px;
+      padding: 26px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      box-shadow: 0 8px 24px rgba(165, 172, 227, 0.08);
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+    }
+    .project-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 14px 32px rgba(165, 172, 227, 0.16);
+    }
+    .project-tag {
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: #E2487E;
+      letter-spacing: 0.06em;
+      margin-bottom: 6px;
+    }
+    .project-title {
+      font-size: 1.35rem;
+      font-weight: 700;
+      margin-bottom: 14px;
+    }
+
+    /* 3-phone gallery */
+    .phone-screens-gallery {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      background: #FFFDF8;
+      padding: 14px 10px;
+      border-radius: 14px;
+      border: 1.5px solid var(--border-soft);
+      margin-bottom: 16px;
+    }
+    .phone-screen-thumb {
+      width: 31%;
+      height: 220px;
+      object-fit: cover;
+      border-radius: 8px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+      transition: transform 0.2s ease;
+    }
+    .phone-screen-thumb:hover {
+      transform: translateY(-4px) scale(1.04);
+    }
+
+    /* Single wide image frame (for City Island & Packaging) */
+    .project-img-frame {
+      width: 100%;
+      height: 220px;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1.5px solid var(--border-soft);
+      background: #F4EBE1;
+      margin-bottom: 16px;
+    }
+    .project-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.3s ease;
+    }
+    .project-card:hover .project-img {
+      transform: scale(1.02);
+    }
+
+    .project-desc {
+      font-size: 0.92rem;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+      line-height: 1.6;
+    }
+    .badge-wrap {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+    .badge {
+      font-size: 0.76rem;
+      font-weight: 600;
+      background: var(--c-lime);
+      padding: 4px 10px;
+      border-radius: 10px;
+      color: var(--text-main);
+    }
+
+    .proto-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 18px;
+      background: #FFFFFF;
+      border: 1.5px solid var(--c-pink);
+      border-radius: 12px;
+      color: #E2487E;
+      font-size: 0.88rem;
+      font-weight: 700;
+      text-decoration: none;
+      transition: all 0.2s ease;
+      width: fit-content;
+    }
+    .proto-link:hover {
+      background: var(--c-pink);
+      color: #FFFFFF;
+      transform: translateY(-2px);
+    }
+
+    /* Embedded Prototype Switcher */
+    .featured-embed-box {
+      margin-top: 44px;
+      background: #FFFFFF;
+      border: 2px solid var(--border-soft);
+      border-radius: 24px;
+      padding: 30px;
+      box-shadow: 0 12px 30px rgba(165, 172, 227, 0.1);
+    }
+    .tab-nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 20px;
+      border-bottom: 2px solid var(--border-soft);
+      padding-bottom: 14px;
+    }
+    .tab-btn {
+      background: #FFFDF8;
+      border: 1.5px solid var(--border-soft);
+      border-radius: 20px;
+      padding: 8px 18px;
+      font-family: inherit;
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .tab-btn:hover {
+      border-color: var(--c-pink);
+      color: var(--text-main);
+    }
+    .tab-btn.active {
+      background: var(--c-pink);
+      color: #FFFFFF;
+      border-color: var(--c-pink);
+    }
+    .embed-container {
+      position: relative;
+      width: 100%;
+      height: 560px;
+      border-radius: 16px;
+      overflow: hidden;
+      border: 2px solid var(--border-soft);
+    }
+    .embed-container iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="top-nav">
+      <a href="index.html" class="back-btn">← Back to Desk Canvas</a>
+    </div>
+
+    <main class="page-sheet">
+      <div class="sheet-pin"></div>
+      <span class="tag-badge">Selected Work</span>
+      <h1>Featured <span>Portfolio</span> 🎨</h1>
+      <p class="subhead">Interactive prototypes, empirical field research, and user experience systems.</p>
+
+      <div class="project-grid">
+
+        <!-- Project 1: Hudson Flow -->
+        <div class="project-card">
+          <div>
+            <span class="project-tag">Civic Tech • Interactive MVP</span>
+            <h3 class="project-title">Hudson Flow</h3>
+
+            <div class="phone-screens-gallery">
+              <img src="hudson-1.png" alt="Hudson Flow Weather & Tide Warning" class="phone-screen-thumb">
+              <img src="hudson-2.png" alt="Hudson Flow SOS Emergency Dispatch" class="phone-screen-thumb">
+              <img src="hudson-3.png" alt="Hudson Flow Activity Experience Feed" class="phone-screen-thumb">
+            </div>
+
+            <p class="project-desc">
+              Mobile platform translating hyper-local water quality and weather into instant activity safety verdicts, pier-level high tide alerts, emergency SOS dispatch, and user trip logs.
+            </p>
+          </div>
+          <div>
+            <div class="badge-wrap">
+              <span class="badge">Mobile UX</span>
+              <span class="badge">Figma MVP</span>
+              <span class="badge">Emergency UX</span>
+              <span class="badge">Safety Alerts</span>
+            </div>
+            <a href="https://www.figma.com/proto/RCwlk8Tc87BfgbXTRfFGl2/Hudsonflow-MVP?node-id=10-8587&p=f&t=VIjpOCSqBW6NET3s-0&scaling=scale-down&content-scaling=fixed&page-id=0%3A1&starting-point-node-id=10%3A8587" target="_blank" class="proto-link">
+              <span>▶</span> Play Figma Prototype ↗
+            </a>
+          </div>
+        </div>
+
+        <!-- Project 2: Save My Meal -->
+        <div class="project-card">
+          <div>
+            <span class="project-tag">Food Sustainability • Interactive Prototype</span>
+            <h3 class="project-title">Save My Meal (Team Zero Hunger)</h3>
+
+            <div class="phone-screens-gallery">
+              <img src="meal-1.png" alt="Save My Meal Campus Meal Feed" class="phone-screen-thumb">
+              <img src="meal-2.png" alt="Save My Meal Profile & Order History" class="phone-screen-thumb">
+              <img src="meal-3.png" alt="Save My Meal CO2 & Impact Metrics" class="phone-screen-thumb">
+            </div>
+
+            <p class="project-desc">
+              Community food-rescue platform designed to eliminate university campus food waste by connecting students with surplus meals from Pace and NYU while tracking personal carbon savings.
+            </p>
+          </div>
+          <div>
+            <div class="badge-wrap">
+              <span class="badge">Mobile App</span>
+              <span class="badge">Figma Prototype</span>
+              <span class="badge">Zero Hunger</span>
+              <span class="badge">Impact Analytics</span>
+            </div>
+            <a href="https://www.figma.com/proto/949LnxAG6qw7uwhLqHc7F2/Team-zero-hunger?node-id=7-950&t=YMWY0KnCfG0aTZxm-1&scaling=scale-down&content-scaling=fixed&page-id=0%3A1&starting-point-node-id=102%3A74&show-proto-sidebar=1" target="_blank" class="proto-link">
+              <span>▶</span> Play Figma Prototype ↗
+            </a>
+          </div>
+        </div>
+
+        <!-- Project 3: Memoir Tree -->
+        <div class="project-card">
+          <div>
+            <span class="project-tag">Empathetic Design • Mobile Prototype</span>
+            <h3 class="project-title">Memoir Tree</h3>
+
+            <div class="phone-screens-gallery">
+              <img src="memoir-1.png" alt="Memoir Tree Home Feed" class="phone-screen-thumb">
+              <img src="memoir-2.png" alt="Memoir Tree Story Cards" class="phone-screen-thumb">
+              <img src="memoir-3.png" alt="Memoir Tree Family Tree Setup" class="phone-screen-thumb">
+            </div>
+
+            <p class="project-desc">
+              Translating qualitative research on grief, storytelling, and healing into an empathetic space for preserving multi-generational family recipes, audio memories, and genealogical records.
+            </p>
+          </div>
+          <div>
+            <div class="badge-wrap">
+              <span class="badge">Qualitative Interviews</span>
+              <span class="badge">Empathy Maps</span>
+              <span class="badge">Family Archival</span>
+              <span class="badge">Figma Prototype</span>
+            </div>
+            <a href="https://www.figma.com/proto/SGeWV0jVydk3FvR0a9s2qd/HCI---Learning-Journal-8?node-id=218-2556&p=f&t=Z0WL8nVnWR3aTM97-0&scaling=scale-down&content-scaling=fixed&page-id=0%3A1&starting-point-node-id=218%3A2556" target="_blank" class="proto-link">
+              <span>▶</span> Play Figma Prototype ↗
+            </a>
+          </div>
+        </div>
+
+        <!-- Project 4: City Island Digital Museum -->
+        <div class="project-card">
+          <div>
+            <span class="project-tag">Physical-Digital • Museum Experience</span>
+            <h3 class="project-title">City Island Digital Museum</h3>
+
+            <div class="project-img-frame">
+              <img src="city-island.png" alt="City Island Oyster Heritage & Projection Mapping" class="project-img">
+            </div>
+
+            <p class="project-desc">
+              Synthesized qualitative field research from 10+ local residents and visitors to design an interactive museum installation combining oyster heritage archives, filtration data, and hardware navigation.
+            </p>
+          </div>
+          <div>
+            <div class="badge-wrap">
+              <span class="badge">Field Research</span>
+              <span class="badge">Projection Mapping</span>
+              <span class="badge">Oyster Ecology</span>
+              <span class="badge">Figma Prototype</span>
+            </div>
+            <a href="https://www.figma.com/proto/uo3acufMhvbfDyooXgSdUs/Nesrin-DRE--1-Draft?node-id=42-85&t=13AWejb735JEhKvN-0&scaling=min-zoom&content-scaling=fixed&page-id=0%3A1&starting-point-node-id=42%3A85&show-proto-sidebar=1" target="_blank" class="proto-link">
+              <span>▶</span> Play Figma Prototype ↗
+            </a>
+          </div>
+        </div>
+
+        <!-- Project 5: Amazonian Açaí Jam Packaging -->
+        <div class="project-card">
+          <div>
+            <span class="project-tag">Sustainable Packaging • Hackathon</span>
+            <h3 class="project-title">Amazonian Açaí Jam Packaging</h3>
+
+            <div class="project-img-frame">
+              <img src="acai-packaging.png" alt="Açaí Jam Sustainable Packaging" class="project-img" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?auto=format&fit=crop&w=800&q=80';">
+            </div>
+
+            <p class="project-desc">
+              Branding and bio-based packaging strategy for the HORECA sector developed with the Ayakuná NGO to support Amazonian biodiversity and women entrepreneurs.
+            </p>
+          </div>
+          <div>
+            <div class="badge-wrap">
+              <span class="badge">Eco Strategy</span>
+              <span class="badge">Branding</span>
+              <span class="badge">Bio Packaging</span>
+              <span class="badge">Miro / Figma</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Live Prototype Embedded Viewer -->
+      <div class="featured-embed-box">
+        <div class="tab-nav">
+          <button class="tab-btn active" onclick="switchProto('hudson', this)">Hudson Flow MVP</button>
+          <button class="tab-btn" onclick="switchProto('meal', this)">Save My Meal</button>
+          <button class="tab-btn" onclick="switchProto('memoir', this)">Memoir Tree</button>
+          <button class="tab-btn" onclick="switchProto('museum', this)">City Island Museum</button>
+        </div>
+        <div class="embed-container">
+          <iframe id="protoFrame" src="https://www.figma.com/embed?embed_host=share&url=https%3A%2F%2Fwww.figma.com%2Fproto%2FRCwlk8Tc87BfgbXTRfFGl2%2FHudsonflow-MVP%3Fnode-id%3D10-8587%26scaling%3Dscale-down%26page-id%3D0%253A1%26starting-point-node-id%3D10%253A8587" allowfullscreen></iframe>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <script>
+    const protoUrls = {
+      hudson: "https://www.figma.com/embed?embed_host=share&url=https%3A%2F%2Fwww.figma.com%2Fproto%2FRCwlk8Tc87BfgbXTRfFGl2%2FHudsonflow-MVP%3Fnode-id%3D10-8587%26scaling%3Dscale-down%26page-id%3D0%253A1%26starting-point-node-id%3D10%253A8587",
+      meal: "https://www.figma.com/embed?embed_host=share&url=https%3A%2F%2Fwww.figma.com%2Fproto%2F949LnxAG6qw7uwhLqHc7F2%2FTeam-zero-hunger%3Fnode-id%3D7-950%26scaling%3Dscale-down%26page-id%3D0%253A1%26starting-point-node-id%3D102%253A74",
+      memoir: "https://www.figma.com/embed?embed_host=share&url=https%3A%2F%2Fwww.figma.com%2Fproto%2FSGeWV0jVydk3FvR0a9s2qd%2FHCI---Learning-Journal-8%3Fnode-id%3D218-2556%26scaling%3Dscale-down%26page-id%3D0%253A1%26starting-point-node-id%3D218%253A2556",
+      museum: "https://www.figma.com/embed?embed_host=share&url=https%3A%2F%2Fwww.figma.com%2Fproto%2Fuo3acufMhvbfDyooXgSdUs%2FNesrin-DRE--1-Draft%3Fnode-id%3D42-85%26scaling%3Dmin-zoom%26page-id%3D0%253A1%26starting-point-node-id%3D42%253A85"
+    };
+
+    function switchProto(type, btn) {
+      const frame = document.getElementById('protoFrame');
+      const buttons = document.querySelectorAll('.tab-btn');
+      buttons.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+
+      if (protoUrls[type]) {
+        frame.src = protoUrls[type];
+      }
+    }
+  </script>
+</body>
+</html>

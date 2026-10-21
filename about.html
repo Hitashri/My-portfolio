@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>About — Hitashri Dinesh Sankhe</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --c-pink: #FFA5C6;
+      --c-yellow: #FFDF7D;
+      --c-lime: #F2FFAA;
+      --c-periwinkle: #A5ACE3;
+      --c-sky: #73E3FF;
+      
+      --desk-bg: #FCFAF7;
+      --desk-dot: #E8DECF;
+      --sheet-bg: #FFFFFF;
+      --text-main: #2D2727;
+      --text-muted: #665D5D;
+      --border-soft: #EFE6DA;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: var(--desk-bg);
+      background-image: 
+        radial-gradient(circle at 10% 15%, rgba(255, 165, 198, 0.25) 0%, transparent 35%),
+        radial-gradient(circle at 90% 80%, rgba(165, 172, 227, 0.28) 0%, transparent 40%),
+        radial-gradient(circle at 50% 50%, rgba(242, 255, 170, 0.25) 0%, transparent 50%),
+        radial-gradient(var(--desk-dot) 1.5px, transparent 1.5px);
+      background-size: 100% 100%, 100% 100%, 100% 100%, 28px 28px;
+      color: var(--text-main);
+      line-height: 1.6;
+      padding: 40px 24px 64px;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .top-nav {
+      margin-bottom: 28px;
+    }
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+      color: var(--text-main);
+      font-weight: 700;
+      font-size: 0.9rem;
+      background: #FFFFFF;
+      border: 1.5px solid var(--c-periwinkle);
+      padding: 8px 20px;
+      border-radius: 24px;
+      box-shadow: 0 4px 12px rgba(165, 172, 227, 0.15);
+      transition: all 0.2s ease;
+    }
+    .back-btn:hover {
+      transform: translateX(-3px);
+      background: var(--c-periwinkle);
+      color: #FFFFFF;
+    }
+
+    /* 2-Column Wide Pinboard Desk */
+    .desk-spread {
+      display: grid;
+      grid-template-columns: 1fr 1.18fr;
+      gap: 36px;
+      align-items: start;
+    }
+
+    @media (max-width: 950px) {
+      .desk-spread {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Left Side: Bio Sheet */
+    .bio-sheet {
+      background: var(--sheet-bg);
+      border: 2px solid var(--border-soft);
+      border-radius: 28px;
+      padding: 44px 38px;
+      box-shadow: 0 16px 36px rgba(165, 172, 227, 0.1);
+      position: relative;
+    }
+
+    .sheet-pin {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      position: absolute;
+      top: 18px;
+      left: 24px;
+      background: var(--c-pink);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+    }
+
+    .tag-badge {
+      display: inline-block;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-weight: 700;
+      color: var(--text-main);
+      background: var(--c-yellow);
+      padding: 5px 14px;
+      border-radius: 12px;
+      margin-bottom: 16px;
+    }
+
+    h1 {
+      font-size: 2.35rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      line-height: 1.25;
+      margin-bottom: 20px;
+    }
+    h1 span {
+      font-family: 'Caveat', cursive;
+      font-size: 2.9rem;
+      color: #E2487E;
+    }
+
+    .personal-quote {
+      font-size: 1.05rem;
+      line-height: 1.7;
+      color: var(--text-main);
+      background: #FFFBF5;
+      border-left: 4px solid var(--c-pink);
+      padding: 16px 20px;
+      border-radius: 0 14px 14px 0;
+      margin-bottom: 26px;
+      font-style: italic;
+    }
+
+    .bio-section-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+      letter-spacing: -0.01em;
+    }
+
+    .bio-text {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      line-height: 1.75;
+      margin-bottom: 24px;
+    }
+
+    .hobbies-cloud {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 14px;
+    }
+    .hobby-chip {
+      border: 1px solid var(--border-soft);
+      padding: 8px 14px;
+      border-radius: 16px;
+      font-size: 0.86rem;
+      font-weight: 600;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .chip-yellow { background: #FFF7D6; }
+    .chip-lime   { background: var(--c-lime); }
+    .chip-pink   { background: #FFE8F0; }
+    .chip-sky    { background: #E2F9FF; }
+    .chip-peri   { background: #EAEBF9; }
+
+    /* Right Side: Photo Pinboard */
+    .gallery-board {
+      background: var(--sheet-bg);
+      border: 2px solid var(--border-soft);
+      border-radius: 28px;
+      padding: 38px 30px;
+      box-shadow: 0 16px 36px rgba(165, 172, 227, 0.1);
+      position: relative;
+    }
+
+    .gallery-header {
+      margin-bottom: 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+    }
+    .gallery-title {
+      font-family: 'Caveat', cursive;
+      font-size: 2.1rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+    .gallery-subtitle {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-weight: 700;
+      background: var(--c-sky);
+      padding: 4px 10px;
+      border-radius: 10px;
+    }
+
+    .photo-pin-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 24px 20px;
+    }
+
+    .photo-pin-card {
+      background: #FFFFFF;
+      padding: 12px 12px 16px;
+      border-radius: 4px;
+      box-shadow: 0 10px 24px rgba(45, 35, 25, 0.08);
+      border: 1px solid var(--border-soft);
+      position: relative;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      cursor: pointer;
+    }
+
+    .photo-pin-card:hover {
+      transform: scale(1.04) rotate(0deg) !important;
+      box-shadow: 0 16px 36px rgba(165, 172, 227, 0.28);
+      z-index: 10;
+    }
+
+    /* Color-matched Washi Tape Strips */
+    .photo-tape {
+      position: absolute;
+      top: -9px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 64px;
+      height: 19px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+      z-index: 2;
+      opacity: 0.92;
+    }
+
+    .tape-yellow { background: var(--c-yellow); }
+    .tape-pink   { background: var(--c-pink); }
+    .tape-lime   { background: var(--c-lime); }
+    .tape-sky    { background: var(--c-sky); }
+    .tape-peri   { background: var(--c-periwinkle); }
+
+    .photo-frame {
+      width: 100%;
+      height: 200px;
+      overflow: hidden;
+      border-radius: 2px;
+      background: #F4EBE1;
+    }
+    .photo-frame img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .photo-caption {
+      font-family: 'Caveat', cursive;
+      font-size: 1.25rem;
+      color: var(--text-main);
+      text-align: center;
+      margin-top: 10px;
+      line-height: 1.2;
+    }
+
+    .card-dog    { transform: rotate(-2deg); }
+    .card-sunset { transform: rotate(1.8deg); }
+    .card-towers { transform: rotate(-1.5deg); }
+    .card-bridge { transform: rotate(2.2deg); }
+    
+    .card-liberty {
+      grid-column: 1 / -1;
+      transform: rotate(-0.8deg);
+    }
+    .card-liberty .photo-frame {
+      height: 220px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="top-nav">
+      <a href="index.html" class="back-btn">← Back to Desk Canvas</a>
+    </div>
+
+    <div class="desk-spread">
+      
+      <!-- Left: Story & Research Bio -->
+      <section class="bio-sheet">
+        <div class="sheet-pin"></div>
+        <span class="tag-badge">Beyond the Wireframes</span>
+        <h1>A Little Bit About <span>Hitashri</span> 🌸</h1>
+
+        <div class="personal-quote">
+          "When I step away from qualitative synthesis and design systems, you’ll usually find me observing urban perspectives through a camera, planning tactical chess moves, or resetting over an iced matcha."
+        </div>
+
+        <h2 class="bio-section-title">Human-Centered Inquiry</h2>
+        <p class="bio-text">
+          My approach to UX research is grounded in deep empathy and behavioral observation. Whether evaluating human-AI interaction dynamics, unpacking user grief patterns, or conducting field interviews on coastal ecology, I focus on transforming ambiguous human needs into clear, validated interfaces.
+        </p>
+
+        <h2 class="bio-section-title">Creative Pastimes & Design Fuel</h2>
+        <div class="hobbies-cloud">
+          <div class="hobby-chip chip-lime"><span>🍵</span> Iced Matcha Lover</div>
+          <div class="hobby-chip chip-yellow"><span>♟️</span> Chess & Strategy</div>
+          <div class="hobby-chip chip-pink"><span>✂️</span> Hands-on DIY Crafts</div>
+          <div class="hobby-chip chip-sky"><span>🎮</span> Casual Online Gaming</div>
+          <div class="hobby-chip chip-peri"><span>📷</span> Architectural Photography</div>
+        </div>
+      </section>
+
+      <!-- Right: Photo Pinboard -->
+      <section class="gallery-board">
+        <div class="gallery-header">
+          <h2 class="gallery-title">Visual Journal 📷</h2>
+          <span class="gallery-subtitle">Light & Perspectives</span>
+        </div>
+
+        <div class="photo-pin-grid">
+          
+          <!-- Photo 1: Dog -->
+          <div class="photo-pin-card card-dog">
+            <div class="photo-tape tape-yellow"></div>
+            <div class="photo-frame">
+              <img src="photo-dog.jpg" alt="Golden Retriever in the water">
+            </div>
+            <div class="photo-caption">Summer ripples • Candid stillness</div>
+          </div>
+
+          <!-- Photo 2: Sunset -->
+          <div class="photo-pin-card card-sunset">
+            <div class="photo-tape tape-pink"></div>
+            <div class="photo-frame">
+              <img src="photo-sunset.jpg" alt="Manhattan golden hour street canyon">
+            </div>
+            <div class="photo-caption">Golden hour canyon • Light studies</div>
+          </div>
+
+          <!-- Photo 3: Night Fog -->
+          <div class="photo-pin-card card-towers">
+            <div class="photo-tape tape-sky"></div>
+            <div class="photo-frame">
+              <img src="photo-fog-towers.jpg" alt="Skyscrapers fading into night fog">
+            </div>
+            <div class="photo-caption">Nocturnal fog • City silhouettes</div>
+          </div>
+
+          <!-- Photo 4: Bridge -->
+          <div class="photo-pin-card card-bridge">
+            <div class="photo-tape tape-lime"></div>
+            <div class="photo-frame">
+              <img src="photo-bridge.jpg" alt="Brooklyn Bridge symmetry and cables">
+            </div>
+            <div class="photo-caption">Suspension lines & perspective</div>
+          </div>
+
+          <!-- Photo 5: Liberty Panorama -->
+          <div class="photo-pin-card card-liberty">
+            <div class="photo-tape tape-peri"></div>
+            <div class="photo-frame">
+              <img src="photo-liberty.jpg" alt="Statue of Liberty architectural detail">
+            </div>
+            <div class="photo-caption">Sculptural form • High contrast perspective</div>
+          </div>
+
+        </div>
+      </section>
+
+    </div>
+  </div>
+
+</body>
+</html>

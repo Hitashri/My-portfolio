@@ -1,0 +1,1240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Clue Quest: SOTY Online Realtime Treasure Hunt</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: #090d16;
+            color: #f8fafc;
+            overflow-x: hidden;
+            touch-action: manipulation;
+        }
+
+        .font-cinzel {
+            font-family: 'Cinzel', serif;
+        }
+
+        /* Animated background gradient */
+        .bg-mesh {
+            background: radial-gradient(circle at 10% 20%, rgba(234, 179, 8, 0.18) 0%, transparent 40%),
+                        radial-gradient(circle at 90% 80%, rgba(225, 29, 72, 0.22) 0%, transparent 50%),
+                        radial-gradient(circle at 50% 50%, rgba(15, 23, 42, 1) 0%, rgba(4, 7, 15, 1) 100%);
+        }
+
+        /* SOTY Secret Chit Paper Fold Animation */
+        .chit-container {
+            perspective: 1200px;
+        }
+
+        .chit-paper {
+            transform-style: preserve-3d;
+            transition: transform 0.7s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.5s ease;
+        }
+
+        .chit-paper.folded {
+            transform: rotateX(85deg) scale(0.6);
+            opacity: 0.1;
+        }
+
+        .chit-paper.unfolded {
+            transform: rotateX(0deg) scale(1);
+            opacity: 1;
+        }
+
+        /* Gold glow & velvet accents */
+        .gold-glow {
+            box-shadow: 0 0 25px rgba(234, 179, 8, 0.45);
+        }
+
+        .gold-border {
+            border: 2px solid #eab308;
+        }
+
+        .velvet-card {
+            background: linear-gradient(145deg, rgba(30, 27, 75, 0.9), rgba(15, 23, 42, 0.95));
+            border: 1px solid rgba(234, 179, 8, 0.25);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #eab308;
+        }
+
+        /* Timer Circle Animation */
+        .timer-circle {
+            transition: stroke-dashoffset 1s linear;
+        }
+    </style>
+</head>
+<body class="bg-mesh min-h-screen flex flex-col justify-between selection:bg-yellow-500 selection:text-black">
+
+    <!-- Top Navigation Header -->
+    <header class="border-b border-slate-800 bg-slate-900/90 backdrop-blur-md sticky top-0 z-50 px-4 py-3">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-3 cursor-pointer" onclick="leaveRoom()">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-yellow-500 via-amber-400 to-rose-600 flex items-center justify-center text-slate-950 font-bold text-xl shadow-lg shadow-yellow-500/20">
+                    <i class="fa-solid fa-trophy"></i>
+                </div>
+                <div>
+                    <h1 class="font-cinzel font-black text-xl md:text-2xl tracking-wider bg-gradient-to-r from-yellow-400 via-amber-200 to-rose-400 bg-clip-text text-transparent">CLUE QUEST</h1>
+                    <p class="text-[10px] md:text-xs text-amber-300/80 tracking-widest uppercase font-semibold">SOTY Online Championship</p>
+                </div>
+            </div>
+
+            <!-- Header Controls & Room Code Display -->
+            <div id="headerStats" class="hidden flex items-center gap-2 md:gap-4">
+                <div id="roomTag" class="bg-amber-500/10 border border-amber-500/40 px-3 py-1.5 rounded-lg flex items-center gap-2 cursor-pointer hover:bg-amber-500/20 transition" onclick="copyRoomCode()">
+                    <i class="fa-solid fa-key text-yellow-400 text-xs"></i>
+                    <span id="headerRoomCode" class="text-xs font-mono font-bold text-yellow-300">ROOM: -----</span>
+                    <i class="fa-solid fa-copy text-slate-400 text-xs ml-1"></i>
+                </div>
+
+                <button onclick="toggleAudio()" id="audioBtn" class="p-2 rounded-lg bg-slate-800 border border-slate-700 hover:bg-slate-700 text-slate-300">
+                    <i class="fa-solid fa-volume-high" id="audioIcon"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="flex-grow max-w-7xl w-full mx-auto p-4 md:p-6 flex flex-col justify-center">
+
+        <!-- ================= VIEW 1: LOBBY & ROOM CREATION ================= -->
+        <section id="lobbyView" class="max-w-2xl mx-auto w-full velvet-card rounded-2xl p-6 md:p-8 backdrop-blur-xl shadow-2xl my-6">
+            <div class="text-center mb-6">
+                <span class="px-3 py-1 rounded-full text-[11px] font-extrabold uppercase tracking-widest bg-yellow-500/20 text-yellow-300 border border-yellow-500/40">
+                    🏆 SOTY Realtime Multi-Device Edition
+                </span>
+                <h2 class="font-cinzel text-3xl md:text-4xl font-black text-white mt-3 mb-2">Treasure Hunt Arena</h2>
+                <p class="text-slate-400 text-xs md:text-sm">Create a live room code or join from any mobile device, laptop, or smart TV!</p>
+            </div>
+
+            <!-- Tabs: Host Game vs Join Room -->
+            <div class="grid grid-cols-2 gap-2 bg-slate-950/60 p-1.5 rounded-xl border border-slate-800 mb-6">
+                <button id="tabHostBtn" onclick="switchLobbyTab('host')" class="py-2.5 rounded-lg text-xs md:text-sm font-bold transition bg-gradient-to-r from-yellow-500 to-amber-500 text-slate-950 shadow-md">
+                    <i class="fa-solid fa-crown mr-1"></i> Host New Hunt
+                </button>
+                <button id="tabJoinBtn" onclick="switchLobbyTab('join')" class="py-2.5 rounded-lg text-xs md:text-sm font-bold text-slate-400 hover:text-white transition">
+                    <i class="fa-solid fa-right-to-bracket mr-1"></i> Join Existing Room
+                </button>
+            </div>
+
+            <!-- FORM 1: HOST CREATION -->
+            <form id="hostForm" onsubmit="handleHostGame(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 mb-1">Your Team / Player Name</label>
+                    <input type="text" id="hostPlayerName" value="Host Champions" class="w-full bg-slate-900/90 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-white font-semibold focus:border-yellow-400 outline-none" required placeholder="e.g. Phoenix Squad">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 mb-1">Primary Favorite Domain (2 First Clues Tailored)</label>
+                    <select id="hostDomain" class="w-full bg-slate-900/90 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-yellow-400 font-semibold focus:border-yellow-400 outline-none">
+                        <!-- Injected dynamically -->
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 mb-1">Clues Required to Win Treasure</label>
+                    <div class="flex items-center gap-3">
+                        <input type="range" id="targetCluesRange" min="3" max="8" value="5" oninput="document.getElementById('cluesCountDisp').innerText = this.value" class="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-yellow-400">
+                        <span id="cluesCountDisp" class="bg-yellow-500 text-slate-950 font-black px-3 py-1 rounded-lg text-xs">5</span>
+                    </div>
+                </div>
+
+                <button type="submit" id="hostSubmitBtn" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-yellow-500 via-amber-400 to-rose-500 hover:from-yellow-400 hover:to-rose-400 text-slate-950 font-extrabold text-sm tracking-wide uppercase shadow-lg shadow-yellow-500/20 transition-all hover:scale-[1.01]">
+                    <i class="fa-solid fa-plus-circle mr-2"></i> Create Room & Get Code
+                </button>
+            </form>
+
+            <!-- FORM 2: JOIN ROOM -->
+            <form id="joinForm" onsubmit="handleJoinGame(event)" class="space-y-4 hidden">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 mb-1">6-Digit Room Code</label>
+                    <input type="text" id="joinRoomCode" maxlength="6" class="w-full bg-slate-900/90 border border-slate-700 rounded-xl px-4 py-2.5 text-center text-lg font-mono font-black text-yellow-400 uppercase tracking-widest focus:border-yellow-400 outline-none" placeholder="e.g. A8X9K2" required>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 mb-1">Your Team Name</label>
+                    <input type="text" id="joinPlayerName" value="Challenger Team" class="w-full bg-slate-900/90 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-white font-semibold focus:border-yellow-400 outline-none" required placeholder="e.g. Apex Predators">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 mb-1">Primary Favorite Domain</label>
+                    <select id="joinDomain" class="w-full bg-slate-900/90 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-yellow-400 font-semibold focus:border-yellow-400 outline-none">
+                        <!-- Injected dynamically -->
+                    </select>
+                </div>
+
+                <button type="submit" id="joinSubmitBtn" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:from-indigo-400 hover:to-pink-400 text-white font-extrabold text-sm tracking-wide uppercase shadow-lg shadow-indigo-500/20 transition-all hover:scale-[1.01]">
+                    <i class="fa-solid fa-arrow-right-to-bracket mr-2"></i> Join Live Room
+                </button>
+            </form>
+        </section>
+
+        <!-- ================= VIEW 2: LOBBY WAITING ROOM ================= -->
+        <section id="waitingView" class="hidden max-w-2xl mx-auto w-full velvet-card rounded-2xl p-6 md:p-8 text-center space-y-6">
+            <div class="inline-block px-4 py-1.5 rounded-full bg-yellow-500/10 border border-yellow-500/30 text-yellow-400 font-mono text-sm font-bold">
+                ROOM CODE: <span id="displayRoomCode" class="text-xl font-extrabold text-yellow-300 ml-1">------</span>
+            </div>
+
+            <div>
+                <h3 class="font-cinzel text-2xl md:text-3xl font-bold text-white mb-2">Assemble Online Contenders</h3>
+                <p class="text-slate-400 text-xs md:text-sm">Share the room code or link so teammates/competitors can join on their phones or laptops!</p>
+            </div>
+
+            <!-- Connected Players Grid -->
+            <div class="bg-slate-950/80 rounded-xl p-4 border border-slate-800">
+                <div class="flex justify-between items-center mb-3">
+                    <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Connected Teams</span>
+                    <span id="playerCountBadge" class="text-xs bg-indigo-500/20 text-indigo-300 font-bold px-2.5 py-0.5 rounded-full">1 Team</span>
+                </div>
+                <div id="lobbyPlayersList" class="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-56 overflow-y-auto">
+                    <!-- Dynamic teams in lobby -->
+                </div>
+            </div>
+
+            <div class="flex flex-col sm:flex-row gap-3">
+                <button onclick="copyRoomCode()" class="flex-1 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold transition flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-share-nodes"></i> Copy Invite Room Code
+                </button>
+                <button id="startGameHostBtn" onclick="handleStartOnlineGame()" class="flex-1 py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-400 text-slate-950 font-black text-xs uppercase tracking-wider shadow-lg shadow-emerald-500/20 hover:opacity-95 transition hidden">
+                    <i class="fa-solid fa-play mr-1"></i> Start Hunt for All
+                </button>
+            </div>
+            <p id="waitingHostMessage" class="text-xs text-amber-400/80 italic">Waiting for Host to launch the game...</p>
+        </section>
+
+        <!-- ================= VIEW 3: GAMEPLAY DASHBOARD ================= -->
+        <section id="gameView" class="hidden space-y-6">
+            
+            <!-- Live Treasure Race Track Header -->
+            <div class="velvet-card rounded-2xl p-4 md:p-6 shadow-xl">
+                <div class="flex justify-between items-center mb-3">
+                    <h3 class="font-cinzel font-bold text-yellow-400 text-base md:text-lg flex items-center gap-2">
+                        <i class="fa-solid fa-map-location-dot"></i> Live SOTY Race Track
+                    </h3>
+                    <span id="gameSyncBadge" class="text-[10px] md:text-xs px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-mono">
+                        <i class="fa-solid fa-bolt mr-1"></i> Realtime Synced
+                    </span>
+                </div>
+
+                <!-- Visual Race Progress Track -->
+                <div id="raceTrack" class="space-y-2.5">
+                    <!-- Dynamic race bars injected here -->
+                </div>
+            </div>
+
+            <!-- Active Turn Banner & 30-Second Timer -->
+            <div id="turnBanner" class="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 border border-indigo-500/30 rounded-2xl p-4 md:p-6 flex flex-col md:flex-row justify-between items-center gap-4 shadow-lg">
+                <div class="flex items-center gap-4 w-full md:w-auto">
+                    <div id="activeTeamAvatar" class="w-12 h-12 md:w-14 md:h-14 rounded-2xl bg-yellow-500 flex items-center justify-center text-slate-950 text-xl font-black shadow-md flex-shrink-0">
+                        T1
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <span class="text-[10px] text-indigo-300 font-bold uppercase tracking-wider">Current Turn:</span>
+                            <span id="turnStatusBadge" class="text-[10px] px-2 py-0.5 rounded bg-yellow-500/20 text-yellow-300 font-bold">In Progress</span>
+                        </div>
+                        <h2 id="activeTeamName" class="text-xl md:text-2xl font-black text-white">Team Titans</h2>
+                        <div class="flex flex-wrap items-center gap-2 mt-1">
+                            <span id="activeTeamDomain" class="text-[11px] bg-slate-900/80 border border-slate-700 text-yellow-400 px-2 py-0.5 rounded-md font-medium">
+                                Field: Geo-Politics
+                            </span>
+                            <span id="favoriteTag" class="text-[11px] bg-yellow-500/20 border border-yellow-500/40 text-yellow-300 px-2 py-0.5 rounded-md font-semibold">
+                                <i class="fa-solid fa-star text-[10px] mr-1"></i> Favorite Domain
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Live 30-Sec Circular Timer & Step Counter -->
+                <div class="flex items-center justify-between md:justify-end gap-6 w-full md:w-auto bg-slate-950/70 px-5 py-2.5 rounded-xl border border-slate-800">
+                    <div class="flex items-center gap-3">
+                        <!-- SVG Circular Timer -->
+                        <div class="relative w-12 h-12 flex items-center justify-center">
+                            <svg class="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
+                                <path class="text-slate-800" stroke-width="3.5" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                                <path id="timerCircleProgress" class="timer-circle text-amber-400" stroke-width="3.5" stroke-dasharray="100, 100" stroke-linecap="round" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                            </svg>
+                            <span id="timerText" class="absolute font-mono font-bold text-sm text-yellow-300">30</span>
+                        </div>
+                        <div class="text-left">
+                            <div class="text-[10px] text-slate-400 font-bold uppercase">Time Limit</div>
+                            <div id="timerLabel" class="text-xs font-semibold text-amber-300">30s Turn</div>
+                        </div>
+                    </div>
+
+                    <div class="h-8 w-px bg-slate-800"></div>
+
+                    <div class="text-center">
+                        <div class="text-[10px] text-slate-400 font-bold uppercase">Steps to Treasure</div>
+                        <div id="activeTeamSteps" class="text-lg md:text-xl font-bold text-emerald-400">0 / 5</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SOTY Secret Chit Visual Unfold Card -->
+            <div class="chit-container">
+                <div id="chitPaper" class="chit-paper unfolded bg-amber-50/95 text-slate-900 border-4 border-amber-300 rounded-2xl p-5 md:p-8 shadow-2xl relative">
+                    <!-- Wax Seal Badge -->
+                    <div class="absolute -top-4 right-6 bg-rose-700 text-amber-200 w-11 h-11 rounded-full border-2 border-amber-300 flex items-center justify-center font-cinzel font-bold text-sm shadow-md">
+                        SOTY
+                    </div>
+
+                    <div class="border-2 border-dashed border-amber-900/20 p-4 md:p-6 rounded-xl">
+                        <div class="flex flex-wrap justify-between items-center gap-2 mb-3">
+                            <span id="questionCategoryBadge" class="text-[11px] font-extrabold uppercase tracking-wider bg-amber-200 text-amber-950 px-3 py-1 rounded-full">
+                                Geo-Politics Clue
+                            </span>
+                            <span id="myTurnNotice" class="text-[11px] font-bold px-2.5 py-0.5 rounded bg-amber-300 text-amber-950 hidden">
+                                ⚡ YOUR TEAM'S TURN!
+                            </span>
+                        </div>
+
+                        <!-- Clue Riddle Text -->
+                        <div class="my-4">
+                            <p class="text-[10px] font-black text-amber-800/80 tracking-widest uppercase mb-1">Secret Chit Clue:</p>
+                            <h3 id="clueQuestionText" class="font-cinzel text-lg md:text-2xl font-bold leading-relaxed text-slate-900">
+                                Synchronizing live question...
+                            </h3>
+                        </div>
+
+                        <!-- Dynamic Hint Drawer -->
+                        <div id="hintBox" class="hidden mb-4 bg-amber-100 border border-amber-300 rounded-xl p-3 text-amber-950 text-xs md:text-sm">
+                            <div class="font-bold flex items-center gap-2 text-amber-900 mb-1">
+                                <i class="fa-solid fa-lightbulb text-amber-600"></i> Secret Hint:
+                            </div>
+                            <p id="hintText">Dynamic hint unlocked...</p>
+                        </div>
+
+                        <!-- Options / Answer Buttons -->
+                        <div id="optionsContainer" class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4">
+                            <!-- Dynamic MCQ options injected here -->
+                        </div>
+
+                        <!-- Action Controls (Hint & Pass/Steal) -->
+                        <div class="flex flex-wrap items-center justify-between gap-3 mt-6 pt-4 border-t border-amber-900/10">
+                            <button onclick="handleRevealHint()" id="hintBtn" class="px-3.5 py-2 rounded-lg bg-amber-200/80 hover:bg-amber-300 text-amber-950 text-xs font-bold transition flex items-center gap-2">
+                                <i class="fa-solid fa-key"></i> Reveal Hint (-5s Penalty)
+                            </button>
+                            <button onclick="handlePassTurn()" id="stealBtn" class="px-3.5 py-2 rounded-lg bg-slate-900 hover:bg-slate-950 text-amber-100 text-xs font-bold transition flex items-center gap-2">
+                                <i class="fa-solid fa-forward"></i> Pass / Push Clue
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Live Standings & Treasure Log -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Ranked Leaderboard -->
+                <div class="lg:col-span-2 velvet-card rounded-2xl p-5">
+                    <h4 class="font-cinzel font-bold text-white mb-3 flex items-center gap-2 text-sm md:text-base">
+                        <i class="fa-solid fa-ranking-star text-yellow-400"></i> Realtime Leaderboard & Speed Metrics
+                    </h4>
+                    <div id="leaderboardList" class="space-y-2">
+                        <!-- Dynamic Leaderboard list -->
+                    </div>
+                </div>
+
+                <!-- Game Feed & Activity Log -->
+                <div class="velvet-card rounded-2xl p-5 flex flex-col justify-between">
+                    <div>
+                        <h4 class="font-cinzel font-bold text-white mb-3 flex items-center gap-2 text-sm md:text-base">
+                            <i class="fa-solid fa-list-check text-rose-400"></i> Hunt Activity Log
+                        </h4>
+                        <div id="gameLog" class="text-xs space-y-2 max-h-48 overflow-y-auto pr-1 text-slate-400 font-mono">
+                            <p class="text-emerald-400">⚡ Hunt live! First team to reach the golden chest wins!</p>
+                        </div>
+                    </div>
+                    <div class="mt-4 pt-3 border-t border-slate-800 text-center">
+                        <span class="text-[11px] text-slate-400">Live multi-device room code sync active</span>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- ================= VIEW 4: VICTORY & TREASURE UNLOCK ================= -->
+        <section id="victoryView" class="hidden max-w-2xl mx-auto w-full text-center velvet-card border-2 border-yellow-500 rounded-3xl p-6 md:p-12 shadow-2xl my-8 relative overflow-hidden">
+            <div class="absolute -top-10 -right-10 w-40 h-40 bg-yellow-500/10 rounded-full blur-3xl"></div>
+            
+            <div class="w-20 h-20 md:w-24 md:h-24 bg-gradient-to-tr from-yellow-400 via-amber-300 to-rose-500 rounded-full flex items-center justify-center mx-auto mb-5 shadow-2xl shadow-yellow-500/40 border-4 border-yellow-300 animate-bounce">
+                <i class="fa-solid fa-trophy text-slate-950 text-3xl md:text-4xl"></i>
+            </div>
+
+            <span class="px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-widest bg-yellow-500 text-slate-950">
+                SOTY Champion Unlocked
+            </span>
+
+            <h2 id="winnerName" class="font-cinzel text-3xl md:text-5xl font-black text-white mt-4 mb-2">
+                Team Titans
+            </h2>
+            <p class="text-slate-300 text-sm md:text-base mb-6">
+                Has unlocked the Golden Treasure Chest & decoded all clues in record time!
+            </p>
+
+            <!-- Winner Stats Breakdown -->
+            <div class="grid grid-cols-3 gap-3 bg-slate-950/80 p-4 rounded-2xl border border-slate-800 mb-6">
+                <div>
+                    <div class="text-[10px] text-slate-400 font-bold uppercase">Total Clues</div>
+                    <div id="winnerClues" class="text-lg md:text-xl font-bold text-yellow-400">5</div>
+                </div>
+                <div>
+                    <div class="text-[10px] text-slate-400 font-bold uppercase">Accuracy</div>
+                    <div id="winnerAccuracy" class="text-lg md:text-xl font-bold text-emerald-400">100%</div>
+                </div>
+                <div>
+                    <div class="text-[10px] text-slate-400 font-bold uppercase">Hints Used</div>
+                    <div id="winnerHintsUsed" class="text-lg md:text-xl font-bold text-indigo-400">0</div>
+                </div>
+            </div>
+
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <button onclick="leaveRoom()" class="px-8 py-3.5 rounded-xl bg-gradient-to-r from-yellow-500 to-amber-500 hover:from-yellow-400 hover:to-amber-400 text-slate-950 font-bold tracking-wide transition shadow-lg shadow-yellow-500/20 text-xs md:text-sm">
+                    <i class="fa-solid fa-rotate-right mr-2"></i> Play New Online Hunt
+                </button>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-slate-800/80 bg-slate-950/80 py-3 text-center text-xs text-slate-500">
+        Clue Quest SOTY Online • Realtime Firebase Backend • 30s Speed Clue Engine
+    </footer>
+
+    <!-- Firebase Realtime Imports & Game Engine Logic -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc, updateDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Firebase Initialization
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'soty-clue-quest-app';
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
+            apiKey: "AIzaSyDummyKey",
+            authDomain: "dummy.firebaseapp.com",
+            projectId: "dummy-project",
+            storageBucket: "dummy.appspot.com",
+            messagingSenderId: "123456789",
+            appId: "1:123456789:web:dummy"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        let currentUser = null;
+        let currentUserId = null;
+
+        // Authenticate User
+        async function initAuth() {
+            try {
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    const cred = await signInWithCustomToken(auth, __initial_auth_token);
+                    currentUser = cred.user;
+                } else {
+                    const cred = await signInAnonymously(auth);
+                    currentUser = cred.user;
+                }
+                currentUserId = currentUser.uid;
+            } catch (err) {
+                console.error("Auth error:", err);
+                currentUserId = 'user_' + Math.random().toString(36).substring(2, 8);
+            }
+        }
+        initAuth();
+
+        /* ================= EXPANDED DOMAINS & QUESTION BANK ================= */
+        const DOMAINS = [
+            { id: "bollywood", name: "Bollywood & Indian Cinema", icon: "fa-film" },
+            { id: "hollywood", name: "Hollywood & Pop Culture", icon: "fa-masks-theater" },
+            { id: "rhyme_riddles", name: "What Am I? Hindi/Eng Riddles", icon: "fa-brain" },
+            { id: "math_speed", name: "Math Puzzles & Speed Calcs", icon: "fa-calculator" },
+            { id: "word_anagrams", name: "Word Games & Anagrams", icon: "fa-arrow-down-a-z" },
+            { id: "geopolitics", name: "Geo-Politics & World Affairs", icon: "fa-globe" },
+            { id: "mythology", name: "Mythology & Folklore", icon: "fa-bolt" },
+            { id: "gaming", name: "Video Games & Tech", icon: "fa-gamepad" },
+            { id: "gk", name: "General Knowledge", icon: "fa-lightbulb" }
+        ];
+
+        const QUESTION_BANK = {
+            bollywood: [
+                {
+                    q: "In the film 'Student of the Year', what was the name of the prestigious high school campus?",
+                    options: ["St. Teresa High School", "St. Xavier Academy", "Imperial College", "Riverdale High"],
+                    answer: "St. Teresa High School",
+                    hint: "Dean Yogendra Vashisht ruled this academy."
+                },
+                {
+                    q: "Which iconic movie line features: 'Babu Moshai, zindagi badi honi chahiye, lambi nahi'?",
+                    options: ["Anand", "Sholay", "Deewaar", "Dilwale Dulhania Le Jayenge"],
+                    answer: "Anand",
+                    hint: "Delivered by Rajesh Khanna."
+                },
+                {
+                    q: "In '3 Idiots', what was Rancho's actual real name revealed at the end of the film?",
+                    options: ["Phunsukh Wangdu", "Ranchoddas Shamaldas Chanchad", "Farhan Qureshi", "Chatur Ramalingam"],
+                    answer: "Phunsukh Wangdu",
+                    hint: "A famous scientist living in Ladakh."
+                }
+            ],
+            hollywood: [
+                {
+                    q: "In 'Avengers: Endgame', which infinity stone required a sacrifice on the planet Vormir?",
+                    options: ["Soul Stone", "Power Stone", "Time Stone", "Mind Stone"],
+                    answer: "Soul Stone",
+                    hint: "Guarded by the Red Skull."
+                },
+                {
+                    q: "What is the highest-grossing film of all time globally (unadjusted for inflation)?",
+                    options: ["Avatar", "Avengers: Endgame", "Titanic", "Star Wars: The Force Awakens"],
+                    answer: "Avatar",
+                    hint: "Directed by James Cameron set on Pandora."
+                },
+                {
+                    q: "Which actor played the Joker in 'The Dark Knight' (2008)?",
+                    options: ["Heath Ledger", "Joaquin Phoenix", "Jared Leto", "Jack Nicholson"],
+                    answer: "Heath Ledger",
+                    hint: "Won a posthumous Academy Award for the role."
+                }
+            ],
+            rhyme_riddles: [
+                {
+                    q: "Riddle: 'Neela asman upar, neela asman niche, pana hai jawab toh gehrai me jao janab!' What am I?",
+                    options: ["Ocean / Water", "Cloud", "Mirror", "Night Sky"],
+                    answer: "Ocean / Water",
+                    hint: "It covers over 70% of the Earth's surface."
+                },
+                {
+                    q: "Riddle: 'I have hands but cannot clap, I have a face but no eyes, I run continuously but never walk.' What am I?",
+                    options: ["A Clock", "A River", "A Shadow", "A Windmill"],
+                    answer: "A Clock",
+                    hint: "Tells you if you are late!"
+                },
+                {
+                    q: "Riddle: 'Jitna mujhko baantoge, utna hi main badhunga. Mujhe na koi chura sake, na koi tod sake.' What am I?",
+                    options: ["Knowledge / Gyan", "Money", "Food", "Secret"],
+                    answer: "Knowledge / Gyan",
+                    hint: "Gained through study and experience."
+                }
+            ],
+            math_speed: [
+                {
+                    q: "Speed Calc: What is 15 x 12 minus 40?",
+                    options: ["140", "150", "160", "130"],
+                    answer: "140",
+                    hint: "15 x 10 = 150, 15 x 2 = 30."
+                },
+                {
+                    q: "Sequence Puzzle: 3, 9, 27, 81, ____. What is the next number?",
+                    options: ["243", "162", "324", "108"],
+                    answer: "243",
+                    hint: "Multiply each term by 3."
+                },
+                {
+                    q: "If a train travels at 120 km/h, how many kilometers does it cover in 15 minutes?",
+                    options: ["30 km", "20 km", "40 km", "25 km"],
+                    answer: "30 km",
+                    hint: "15 minutes is 1/4th of an hour."
+                }
+            ],
+            word_anagrams: [
+                {
+                    q: "Anagram Clue: Rearrange 'LISTEN' to find a word that requires your ears!",
+                    options: ["SILENT", "ENLIST", "TINSEL", "INLETS"],
+                    answer: "SILENT",
+                    hint: "When you listen, you must be..."
+                },
+                {
+                    q: "Word Puzzle: Which 5-letter word becomes shorter when you add 2 letters to it?",
+                    options: ["Short", "Small", "Brief", "Little"],
+                    answer: "Short",
+                    hint: "Short + 'er' = Shorter!"
+                },
+                {
+                    q: "Anagram Clue: Rearrange 'EARTH' to get a vital bodily organ!",
+                    options: ["HEART", "HARE", "HATER", "RATE"],
+                    answer: "HEART",
+                    hint: "It pumps blood through your body."
+                }
+            ],
+            geopolitics: [
+                {
+                    q: "Which international body with 193 member states is headquartered in New York City?",
+                    options: ["The United Nations", "NATO", "European Union", "G20"],
+                    answer: "The United Nations",
+                    hint: "Established in 1945 post-WWII."
+                },
+                {
+                    q: "Which landmark Egyptian canal connects the Mediterranean Sea directly to the Red Sea?",
+                    options: ["Suez Canal", "Panama Canal", "Kiel Canal", "Bosphorus"],
+                    answer: "Suez Canal",
+                    hint: "Famously blocked by Ever Given in 2021."
+                },
+                {
+                    q: "Which nation is landlocked between India and China and measures Gross National Happiness?",
+                    options: ["Bhutan", "Nepal", "Mongolia", "Laos"],
+                    answer: "Bhutan",
+                    hint: "Known as the Land of the Thunder Dragon."
+                }
+            ],
+            mythology: [
+                {
+                    q: "In Greek mythology, who forged thunderbolts for Zeus inside volcanic smithies?",
+                    options: ["Hephaestus", "Ares", "Hermes", "Poseidon"],
+                    answer: "Hephaestus",
+                    hint: "The god of blacksmiths, metalworking, and fire."
+                },
+                {
+                    q: "In the Hindu epic Mahabharata, who was the guru who taught both the Pandavas and Kauravas archery?",
+                    options: ["Dronacharya", "Kripacharya", "Parashurama", "Vyasa"],
+                    answer: "Dronacharya",
+                    hint: "Eklavya gave his thumb as Gurudakshina to him."
+                },
+                {
+                    q: "In Norse mythology, what is the name of Thor's enchanted hammer?",
+                    options: ["Mjolnir", "Gungnir", "Aegis", "Yggdrasil"],
+                    answer: "Mjolnir",
+                    hint: "Only the worthy can lift it."
+                }
+            ],
+            gaming: [
+                {
+                    q: "In 'The Legend of Zelda', what sacred relic is made of three golden triangles?",
+                    options: ["Triforce", "Master Orb", "Eldritch Gem", "Relic of Time"],
+                    answer: "Triforce",
+                    hint: "Represents Power, Wisdom, and Courage."
+                },
+                {
+                    q: "In Minecraft, what tool is required to light a Nether Portal made of Obsidian?",
+                    options: ["Flint and Steel", "Fire Charge", "Lava Bucket", "Redstone Torch"],
+                    answer: "Flint and Steel",
+                    hint: "Crafted using an iron ingot and flint."
+                },
+                {
+                    q: "Which company created 'Sonic the Hedgehog' as a rival mascot to Nintendo's Mario?",
+                    options: ["Sega", "Capcom", "Bandai Namco", "Konami"],
+                    answer: "Sega",
+                    hint: "Popular for Genesis and Dreamcast consoles."
+                }
+            ],
+            gk: [
+                {
+                    q: "Which chemical element on the Periodic Table has the chemical symbol 'Au'?",
+                    options: ["Gold", "Silver", "Argon", "Aluminum"],
+                    answer: "Gold",
+                    hint: "From Latin 'Aurum'."
+                },
+                {
+                    q: "What is the largest organ of the human body?",
+                    options: ["Skin", "Liver", "Brain", "Heart"],
+                    answer: "Skin",
+                    hint: "Covers the entire external body surface."
+                },
+                {
+                    q: "Which planet in our solar system has the highest number of moons recorded?",
+                    options: ["Saturn", "Jupiter", "Neptune", "Uranus"],
+                    answer: "Saturn",
+                    hint: "Famous for its wide, bright ring system."
+                }
+            ]
+        };
+
+        /* ================= STATE MANAGEMENT ================= */
+        let roomCode = null;
+        let isHost = false;
+        let roomData = null;
+        let roomUnsubscribe = null;
+        let timerInterval = null;
+        let audioEnabled = true;
+
+        /* ================= SOUND SYNTHESIS (Web Audio API) ================= */
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+        function playSound(type) {
+            if (!audioEnabled) return;
+            try {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+
+                if (type === 'correct') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(523.25, audioCtx.currentTime); // C5
+                    osc.frequency.exponentialRampToValueAtTime(659.25, audioCtx.currentTime + 0.15); // E5
+                    gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.3);
+                } else if (type === 'wrong') {
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(220, audioCtx.currentTime);
+                    osc.frequency.exponentialRampToValueAtTime(110, audioCtx.currentTime + 0.25);
+                    gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.3);
+                } else if (type === 'tick') {
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(800, audioCtx.currentTime);
+                    gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.05);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.05);
+                } else if (type === 'unfold') {
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(300, audioCtx.currentTime);
+                    osc.frequency.linearRampToValueAtTime(600, audioCtx.currentTime + 0.12);
+                    gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.2);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.2);
+                }
+            } catch(e) { console.log(e); }
+        }
+
+        window.toggleAudio = function() {
+            audioEnabled = !audioEnabled;
+            const icon = document.getElementById('audioIcon');
+            icon.className = audioEnabled ? 'fa-solid fa-volume-high' : 'fa-solid fa-volume-xmark';
+        };
+
+        /* ================= INITIALIZATION & DOM HELPER ================= */
+        // Populate Domain Select Boxes
+        function populateDomains() {
+            const hostSel = document.getElementById('hostDomain');
+            const joinSel = document.getElementById('joinDomain');
+            
+            const optionsHtml = DOMAINS.map(d => `<option value="${d.id}">${d.name}</option>`).join('');
+            hostSel.innerHTML = optionsHtml;
+            joinSel.innerHTML = optionsHtml;
+        }
+        populateDomains();
+
+        window.switchLobbyTab = function(tab) {
+            const hostBtn = document.getElementById('tabHostBtn');
+            const joinBtn = document.getElementById('tabJoinBtn');
+            const hostForm = document.getElementById('hostForm');
+            const joinForm = document.getElementById('joinForm');
+
+            if (tab === 'host') {
+                hostBtn.className = "py-2.5 rounded-lg text-xs md:text-sm font-bold transition bg-gradient-to-r from-yellow-500 to-amber-500 text-slate-950 shadow-md";
+                joinBtn.className = "py-2.5 rounded-lg text-xs md:text-sm font-bold text-slate-400 hover:text-white transition";
+                hostForm.classList.remove('hidden');
+                joinForm.classList.add('hidden');
+            } else {
+                joinBtn.className = "py-2.5 rounded-lg text-xs md:text-sm font-bold transition bg-gradient-to-r from-indigo-500 to-purple-500 text-white shadow-md";
+                hostBtn.className = "py-2.5 rounded-lg text-xs md:text-sm font-bold text-slate-400 hover:text-white transition";
+                joinForm.classList.remove('hidden');
+                hostForm.classList.add('hidden');
+            }
+        };
+
+        /* ================= FIRESTORE REALTIME SYNC HANDLERS ================= */
+        function getRoomDocRef(code) {
+            return doc(db, 'artifacts', appId, 'public', 'data', 'soty_rooms', code.toUpperCase());
+        }
+
+        window.handleHostGame = async function(e) {
+            e.preventDefault();
+            if (!currentUserId) await initAuth();
+
+            const playerName = document.getElementById('hostPlayerName').value.trim() || "Host Team";
+            const domain = document.getElementById('hostDomain').value;
+            const targetClues = parseInt(document.getElementById('targetCluesRange').value) || 5;
+
+            // Generate 6-letter room code
+            roomCode = Math.random().toString(36).substring(2, 8).toUpperCase();
+            isHost = true;
+
+            const initialTeam = {
+                id: currentUserId,
+                name: playerName,
+                domain: domain,
+                color: '#eab308',
+                steps: 0,
+                favQuestionsAnswered: 0,
+                totalAnswers: 0,
+                correctAnswers: 0,
+                hintsUsed: 0
+            };
+
+            const roomPayload = {
+                code: roomCode,
+                hostId: currentUserId,
+                targetClues: targetClues,
+                status: 'waiting', // 'waiting', 'playing', 'finished'
+                teams: [initialTeam],
+                currentTurnIndex: 0,
+                turnStartTime: Date.now(),
+                activeQuestion: getRandomQuestion(domain),
+                winner: null,
+                logs: [`⚡ Room ${roomCode} created by ${playerName}!`]
+            };
+
+            try {
+                await setDoc(getRoomDocRef(roomCode), roomPayload);
+                listenToRoom(roomCode);
+            } catch (err) {
+                console.error("Error creating room:", err);
+            }
+        };
+
+        window.handleJoinGame = async function(e) {
+            e.preventDefault();
+            if (!currentUserId) await initAuth();
+
+            const codeInput = document.getElementById('joinRoomCode').value.trim().toUpperCase();
+            const playerName = document.getElementById('joinPlayerName').value.trim() || "Challenger";
+            const domain = document.getElementById('joinDomain').value;
+
+            if (codeInput.length !== 6) {
+                alert("Please enter a valid 6-character room code.");
+                return;
+            }
+
+            try {
+                const roomSnap = await getDoc(getRoomDocRef(codeInput));
+                if (!roomSnap.exists()) {
+                    alert("Room not found! Check your code.");
+                    return;
+                }
+
+                const data = roomSnap.data();
+                if (data.status === 'finished') {
+                    alert("This game has already ended.");
+                    return;
+                }
+
+                roomCode = codeInput;
+                isHost = (data.hostId === currentUserId);
+
+                // Check if player already in room
+                let existingTeams = data.teams || [];
+                const colors = ['#eab308', '#6366f1', '#ec4899', '#10b981', '#f97316', '#8b5cf6', '#06b6d4', '#f43f5e'];
+                const assignedColor = colors[existingTeams.length % colors.length];
+
+                const existingIndex = existingTeams.findIndex(t => t.id === currentUserId);
+                if (existingIndex === -1) {
+                    existingTeams.push({
+                        id: currentUserId,
+                        name: playerName,
+                        domain: domain,
+                        color: assignedColor,
+                        steps: 0,
+                        favQuestionsAnswered: 0,
+                        totalAnswers: 0,
+                        correctAnswers: 0,
+                        hintsUsed: 0
+                    });
+
+                    await updateDoc(getRoomDocRef(roomCode), {
+                        teams: existingTeams,
+                        logs: [`🎉 ${playerName} joined the room!`, ...(data.logs || [])]
+                    });
+                }
+
+                listenToRoom(roomCode);
+            } catch (err) {
+                console.error("Error joining room:", err);
+            }
+        };
+
+        function listenToRoom(code) {
+            if (roomUnsubscribe) roomUnsubscribe();
+
+            roomUnsubscribe = onSnapshot(getRoomDocRef(code), (docSnap) => {
+                if (!docSnap.exists()) return;
+                roomData = docSnap.data();
+                renderState(roomData);
+            }, (error) => {
+                console.error("Snapshot error:", error);
+            });
+        }
+
+        window.handleStartOnlineGame = async function() {
+            if (!isHost || !roomCode) return;
+            const currentTurnTeam = roomData.teams[0];
+            const q = getRandomQuestion(currentTurnTeam.domain);
+
+            await updateDoc(getRoomDocRef(roomCode), {
+                status: 'playing',
+                currentTurnIndex: 0,
+                turnStartTime: Date.now(),
+                activeQuestion: q,
+                logs: [`🚀 Hunt initiated by Host!`, ...(roomData.logs || [])]
+            });
+        };
+
+        window.leaveRoom = function() {
+            if (roomUnsubscribe) roomUnsubscribe();
+            clearInterval(timerInterval);
+            roomCode = null;
+            roomData = null;
+
+            document.getElementById('headerStats').classList.add('hidden');
+            document.getElementById('lobbyView').classList.remove('hidden');
+            document.getElementById('waitingView').classList.add('hidden');
+            document.getElementById('gameView').classList.add('hidden');
+            document.getElementById('victoryView').classList.add('hidden');
+        };
+
+        window.copyRoomCode = function() {
+            if (!roomCode) return;
+            const temp = document.createElement('textarea');
+            temp.value = roomCode;
+            document.body.appendChild(temp);
+            temp.select();
+            document.execCommand('copy');
+            document.body.removeChild(temp);
+
+            const badge = document.getElementById('headerRoomCode');
+            badge.innerText = 'COPIED!';
+            setTimeout(() => { badge.innerText = `ROOM: ${roomCode}`; }, 1500);
+        };
+
+        /* ================= STREAMING_CHUNK:Realtime UI State Rendering & 30s Countdown... ================= */
+        function renderState(data) {
+            // Header stats
+            document.getElementById('headerStats').classList.remove('hidden');
+            document.getElementById('headerRoomCode').innerText = `ROOM: ${data.code}`;
+
+            if (data.status === 'waiting') {
+                document.getElementById('lobbyView').classList.add('hidden');
+                document.getElementById('waitingView').classList.remove('hidden');
+                document.getElementById('gameView').classList.add('hidden');
+                document.getElementById('victoryView').classList.add('hidden');
+
+                document.getElementById('displayRoomCode').innerText = data.code;
+                document.getElementById('playerCountBadge').innerText = `${data.teams.length} ${data.teams.length === 1 ? 'Team' : 'Teams'}`;
+
+                // Lobby teams list
+                const list = document.getElementById('lobbyPlayersList');
+                list.innerHTML = data.teams.map(t => `
+                    <div class="flex items-center gap-2 p-2.5 rounded-lg bg-slate-900 border border-slate-800 text-xs text-left">
+                        <span class="w-3 h-3 rounded-full flex-shrink-0" style="background-color: ${t.color}"></span>
+                        <div class="truncate flex-grow">
+                            <div class="font-bold text-white truncate">${t.name}</div>
+                            <div class="text-[10px] text-yellow-400">${DOMAINS.find(d=>d.id===t.domain)?.name || t.domain}</div>
+                        </div>
+                        ${t.id === data.hostId ? '<span class="text-[9px] bg-amber-500/20 text-amber-300 font-bold px-1.5 py-0.5 rounded">HOST</span>' : ''}
+                    </div>
+                `).join('');
+
+                if (isHost) {
+                    document.getElementById('startGameHostBtn').classList.remove('hidden');
+                    document.getElementById('waitingHostMessage').classList.add('hidden');
+                } else {
+                    document.getElementById('startGameHostBtn').classList.add('hidden');
+                    document.getElementById('waitingHostMessage').classList.remove('hidden');
+                }
+            } 
+            else if (data.status === 'playing') {
+                document.getElementById('lobbyView').classList.add('hidden');
+                document.getElementById('waitingView').classList.add('hidden');
+                document.getElementById('gameView').classList.remove('hidden');
+                document.getElementById('victoryView').classList.add('hidden');
+
+                renderRaceTrack(data);
+                renderActiveTurn(data);
+                renderLeaderboard(data);
+                renderLogs(data.logs);
+                start30sTimer(data.turnStartTime);
+            } 
+            else if (data.status === 'finished') {
+                document.getElementById('lobbyView').classList.add('hidden');
+                document.getElementById('waitingView').classList.add('hidden');
+                document.getElementById('gameView').classList.add('hidden');
+                document.getElementById('victoryView').classList.remove('hidden');
+
+                const winner = data.winner;
+                if (winner) {
+                    document.getElementById('winnerName').innerText = winner.name;
+                    document.getElementById('winnerClues').innerText = winner.steps;
+                    const accuracy = winner.totalAnswers > 0 ? Math.round((winner.correctAnswers / winner.totalAnswers) * 100) : 100;
+                    document.getElementById('winnerAccuracy').innerText = `${accuracy}%`;
+                    document.getElementById('winnerHintsUsed').innerText = winner.hintsUsed;
+
+                    confetti({ particleCount: 120, spread: 70, origin: { y: 0.6 } });
+                }
+            }
+        }
+
+        /* ================= STREAMING_CHUNK:Timer Engine & Question Turn Syncing... ================= */
+        function start30sTimer(turnStartTime) {
+            clearInterval(timerInterval);
+
+            const timerText = document.getElementById('timerText');
+            const circleProgress = document.getElementById('timerCircleProgress');
+
+            function updateTimer() {
+                const elapsedSeconds = Math.floor((Date.now() - turnStartTime) / 1000);
+                const remaining = Math.max(0, 30 - elapsedSeconds);
+
+                timerText.innerText = remaining;
+                const strokeDash = (remaining / 30) * 100;
+                circleProgress.style.strokeDasharray = `${strokeDash}, 100`;
+
+                if (remaining <= 5 && remaining > 0) {
+                    playSound('tick');
+                }
+
+                if (remaining === 0 && isHost) {
+                    clearInterval(timerInterval);
+                    handleTimeOut();
+                }
+            }
+
+            updateTimer();
+            timerInterval = setInterval(updateTimer, 1000);
+        }
+
+        function renderActiveTurn(data) {
+            const currentTeam = data.teams[data.currentTurnIndex];
+            const isMyTurn = currentTeam.id === currentUserId;
+
+            document.getElementById('activeTeamAvatar').innerText = `T${data.currentTurnIndex + 1}`;
+            document.getElementById('activeTeamAvatar').style.backgroundColor = currentTeam.color;
+            document.getElementById('activeTeamName').innerText = currentTeam.name;
+
+            const domainObj = DOMAINS.find(d => d.id === currentTeam.domain);
+            document.getElementById('activeTeamDomain').innerText = `Field: ${domainObj?.name || currentTeam.domain}`;
+            document.getElementById('activeTeamSteps').innerText = `${currentTeam.steps} / ${data.targetClues}`;
+
+            const favTag = document.getElementById('favoriteTag');
+            if (currentTeam.favQuestionsAnswered < 2) {
+                favTag.classList.remove('hidden');
+                favTag.innerHTML = `<i class="fa-solid fa-star text-[10px] mr-1"></i> Preferred Field (Clue ${currentTeam.favQuestionsAnswered + 1}/2)`;
+            } else {
+                favTag.classList.add('hidden');
+            }
+
+            const myTurnNotice = document.getElementById('myTurnNotice');
+            if (isMyTurn) {
+                myTurnNotice.classList.remove('hidden');
+            } else {
+                myTurnNotice.classList.add('hidden');
+            }
+
+            // Chit card content
+            const q = data.activeQuestion;
+            if (q) {
+                document.getElementById('questionCategoryBadge').innerText = (DOMAINS.find(d=>d.id===q.category)?.name || q.category) + " Clue";
+                document.getElementById('clueQuestionText').innerText = q.q;
+                document.getElementById('hintText').innerText = q.hint;
+
+                const optionsContainer = document.getElementById('optionsContainer');
+                optionsContainer.innerHTML = '';
+
+                q.options.forEach((opt) => {
+                    const btn = document.createElement('button');
+                    btn.className = `p-3.5 rounded-xl border-2 ${isMyTurn ? 'border-amber-900/30 bg-amber-100 hover:bg-amber-200 cursor-pointer' : 'border-amber-900/10 bg-amber-100/50 cursor-not-allowed opacity-80'} font-bold text-slate-900 text-left transition text-xs md:text-sm flex justify-between items-center`;
+                    btn.innerHTML = `<span>${opt}</span> <i class="fa-solid fa-circle-chevron-right text-amber-700/40"></i>`;
+                    
+                    if (isMyTurn) {
+                        btn.onclick = () => submitAnswer(opt);
+                    }
+                    optionsContainer.appendChild(btn);
+                });
+            }
+
+            // Chit unfold animation
+            const chitPaper = document.getElementById('chitPaper');
+            if (chitPaper.dataset.turn !== `${data.currentTurnIndex}_${data.turnStartTime}`) {
+                chitPaper.dataset.turn = `${data.currentTurnIndex}_${data.turnStartTime}`;
+                chitPaper.classList.remove('unfolded');
+                chitPaper.classList.add('folded');
+                playSound('unfold');
+                setTimeout(() => {
+                    chitPaper.classList.remove('folded');
+                    chitPaper.classList.add('unfolded');
+                }, 300);
+            }
+        }
+
+        window.submitAnswer = async function(selectedOption) {
+            if (!roomData || roomData.teams[roomData.currentTurnIndex].id !== currentUserId) return;
+
+            const currentTeam = roomData.teams[roomData.currentTurnIndex];
+            const q = roomData.activeQuestion;
+            const isCorrect = (selectedOption === q.answer);
+
+            let updatedTeams = [...roomData.teams];
+            let teamToUpdate = { ...currentTeam };
+            teamToUpdate.totalAnswers = (teamToUpdate.totalAnswers || 0) + 1;
+
+            let logMsg = "";
+            let nextWinner = null;
+
+            if (isCorrect) {
+                playSound('correct');
+                teamToUpdate.steps++;
+                teamToUpdate.correctAnswers = (teamToUpdate.correctAnswers || 0) + 1;
+                
+                if (teamToUpdate.favQuestionsAnswered < 2 && q.category === teamToUpdate.domain) {
+                    teamToUpdate.favQuestionsAnswered++;
+                }
+
+                logMsg = `✅ ${teamToUpdate.name} solved the clue correctly! (+1 Step)`;
+
+                if (teamToUpdate.steps >= roomData.targetClues) {
+                    nextWinner = teamToUpdate;
+                }
+            } else {
+                playSound('wrong');
+                logMsg = `❌ ${teamToUpdate.name} guessed incorrectly!`;
+            }
+
+            updatedTeams[roomData.currentTurnIndex] = teamToUpdate;
+
+            const nextTurnIndex = (roomData.currentTurnIndex + 1) % updatedTeams.length;
+            const nextTeam = updatedTeams[nextTurnIndex];
+            const nextQ = getRandomQuestion(nextTeam.domain, nextTeam.favQuestionsAnswered >= 2);
+
+            await updateDoc(getRoomDocRef(roomCode), {
+                teams: updatedTeams,
+                currentTurnIndex: nextTurnIndex,
+                turnStartTime: Date.now(),
+                activeQuestion: nextQ,
+                status: nextWinner ? 'finished' : 'playing',
+                winner: nextWinner,
+                logs: [logMsg, ...(roomData.logs || [])]
+            });
+        };
+
+        window.handlePassTurn = async function() {
+            if (!roomData || roomData.teams[roomData.currentTurnIndex].id !== currentUserId) return;
+            const currentTeam = roomData.teams[roomData.currentTurnIndex];
+
+            const nextTurnIndex = (roomData.currentTurnIndex + 1) % roomData.teams.length;
+            const nextTeam = roomData.teams[nextTurnIndex];
+            const nextQ = getRandomQuestion(nextTeam.domain, nextTeam.favQuestionsAnswered >= 2);
+
+            await updateDoc(getRoomDocRef(roomCode), {
+                currentTurnIndex: nextTurnIndex,
+                turnStartTime: Date.now(),
+                activeQuestion: nextQ,
+                logs: [`↪️ ${currentTeam.name} passed/pushed the clue turn.`, ...(roomData.logs || [])]
+            });
+        };
+
+        window.handleRevealHint = function() {
+            if (!roomData || roomData.teams[roomData.currentTurnIndex].id !== currentUserId) return;
+            document.getElementById('hintBox').classList.remove('hidden');
+            playSound('tick');
+        };
+
+        async function handleTimeOut() {
+            if (!roomData) return;
+            const currentTeam = roomData.teams[roomData.currentTurnIndex];
+            const nextTurnIndex = (roomData.currentTurnIndex + 1) % roomData.teams.length;
+            const nextTeam = roomData.teams[nextTurnIndex];
+            const nextQ = getRandomQuestion(nextTeam.domain, nextTeam.favQuestionsAnswered >= 2);
+
+            await updateDoc(getRoomDocRef(roomCode), {
+                currentTurnIndex: nextTurnIndex,
+                turnStartTime: Date.now(),
+                activeQuestion: nextQ,
+                logs: [`⏳ 30s timer expired for ${currentTeam.name}! Turn passed.`, ...(roomData.logs || [])]
+            });
+        }
+
+        function getRandomQuestion(domain, forceRandomOther = false) {
+            let cat = domain;
+            if (forceRandomOther) {
+                const keys = Object.keys(QUESTION_BANK);
+                cat = keys[Math.floor(Math.random() * keys.length)];
+            }
+            const list = QUESTION_BANK[cat] || QUESTION_BANK['gk'];
+            const q = list[Math.floor(Math.random() * list.length)];
+            return { ...q, category: cat };
+        }
+
+        /* ================= STREAMING_CHUNK:Rendering Track & Leaderboard UI... ================= */
+        function renderRaceTrack(data) {
+            const raceTrack = document.getElementById('raceTrack');
+            raceTrack.innerHTML = '';
+
+            data.teams.forEach((team, idx) => {
+                const progressPercent = Math.min(100, (team.steps / data.targetClues) * 100);
+                const isTurn = data.currentTurnIndex === idx;
+
+                const trackRow = document.createElement('div');
+                trackRow.className = `p-2.5 rounded-xl border ${isTurn ? 'border-yellow-500 bg-yellow-500/10 gold-glow' : 'border-slate-800 bg-slate-950/60'} transition-all`;
+
+                trackRow.innerHTML = `
+                    <div class="flex justify-between items-center mb-1 text-[11px]">
+                        <span class="font-bold text-white flex items-center gap-2 truncate">
+                            <span class="w-2.5 h-2.5 rounded-full flex-shrink-0" style="background-color: ${team.color}"></span>
+                            ${team.name} ${isTurn ? '⚡' : ''}
+                        </span>
+                        <span class="text-slate-400 font-mono">${team.steps}/${data.targetClues} Clues</span>
+                    </div>
+                    <div class="relative w-full h-3 bg-slate-800 rounded-full overflow-hidden border border-slate-700">
+                        <div class="h-full rounded-full transition-all duration-500" style="width: ${progressPercent}%; background-color: ${team.color}"></div>
+                    </div>
+                `;
+                raceTrack.appendChild(trackRow);
+            });
+        }
+
+        function renderLeaderboard(data) {
+            const list = document.getElementById('leaderboardList');
+            list.innerHTML = '';
+
+            const sortedTeams = [...data.teams].sort((a, b) => b.steps - a.steps);
+
+            sortedTeams.forEach((team, idx) => {
+                const row = document.createElement('div');
+                row.className = "flex items-center justify-between p-2 rounded-xl bg-slate-950/50 border border-slate-800 text-xs";
+                
+                const accuracy = team.totalAnswers > 0 ? Math.round((team.correctAnswers / team.totalAnswers) * 100) : 100;
+
+                row.innerHTML = `
+                    <div class="flex items-center gap-2 truncate">
+                        <span class="font-bold w-4 text-center ${idx === 0 ? 'text-yellow-400' : 'text-slate-500'}">#${idx + 1}</span>
+                        <span class="w-2.5 h-2.5 rounded-full flex-shrink-0" style="background-color: ${team.color}"></span>
+                        <span class="font-semibold text-slate-200 truncate">${team.name}</span>
+                    </div>
+                    <div class="flex items-center gap-3 text-slate-400 font-mono text-[11px]">
+                        <span>Steps: <strong class="text-emerald-400">${team.steps}</strong></span>
+                        <span>Accuracy: <strong class="text-indigo-300">${accuracy}%</strong></span>
+                    </div>
+                `;
+                list.appendChild(row);
+            });
+        }
+
+        function renderLogs(logs) {
+            const gameLog = document.getElementById('gameLog');
+            if (!logs || !logs.length) return;
+            gameLog.innerHTML = logs.slice(0, 8).map(l => `<p>${l}</p>`).join('');
+        }
+    </script>
+</body>
+</html>
